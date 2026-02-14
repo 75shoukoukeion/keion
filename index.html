@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#0b1220" />
+<title>軽音部 機材管理ポータル</title>
+<meta name="description" content="名護商工 軽音部 機材管理システムへの入口ページ" />
+<style>
+
+    :root{
+
+      --bg:#070b14;
+
+      --card: rgba(255,255,255,.08);
+
+      --card2: rgba(255,255,255,.12);
+
+      --txt:#e9eefc;
+
+      --muted: rgba(233,238,252,.75);
+
+      --danger:#ff5c7a;
+
+      --ok:#5cffb4;
+
+      --line: rgba(255,255,255,.14);
+
+      --shadow: 0 20px 80px rgba(0,0,0,.55);
+
+      --radius: 18px;
+
+    }
+
+    *{ box-sizing: border-box; }
+
+    body{
+
+      margin:0;
+
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif;
+
+      background:
+
+        radial-gradient(900px 500px at 20% 15%, rgba(80,120,255,.18), transparent 60%),
+
+        radial-gradient(900px 500px at 80% 25%, rgba(255,92,190,.16), transparent 60%),
+
+        radial-gradient(900px 600px at 50% 85%, rgba(92,255,180,.12), transparent 60%),
+
+        linear-gradient(180deg, #050812, var(--bg));
+
+      color: var(--txt);
+
+      min-height: 100svh;
+
+      display:flex;
+
+      align-items:center;
+
+      justify-content:center;
+
+      padding: 22px;
+
+    }
+
+    .wrap{
+
+      width: min(980px, 100%);
+
+      display:grid;
+
+      grid-template-columns: 1.2fr .8fr;
+
+      gap: 18px;
+
+    }
+
+    @media (max-width: 860px){
+
+      .wrap{ grid-template-columns: 1fr; }
+
+    }
+
+    .hero, .side{
+
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+
+      border: 1px solid var(--line);
+
+      box-shadow: var(--shadow);
+
+      border-radius: var(--radius);
+
+      overflow:hidden;
+
+    }
+
+    .heroHeader{
+
+      padding: 22px 22px 14px;
+
+      border-bottom: 1px solid var(--line);
+
+      position:relative;
+
+    }
+
+    .badge{
+
+      display:inline-flex;
+
+      align-items:center;
+
+      gap: 10px;
+
+      padding: 8px 12px;
+
+      border: 1px solid rgba(255,255,255,.16);
+
+      border-radius: 999px;
+
+      background: rgba(0,0,0,.22);
+
+      color: var(--muted);
+
+      font-size: 13px;
+
+    }
+
+    .dot{
+
+      width:10px;height:10px;border-radius:50%;
+
+      background: radial-gradient(circle at 30% 30%, #fff, rgba(255,255,255,.2) 40%, rgba(255,255,255,0) 70%),
+
+                  linear-gradient(90deg, rgba(92,255,180,.9), rgba(80,120,255,.9));
+
+      box-shadow: 0 0 18px rgba(92,255,180,.5);
+
+    }
+
+    h1{
+
+      margin: 14px 0 6px;
+
+      font-size: clamp(22px, 3.4vw, 34px);
+
+      letter-spacing: .02em;
+
+      line-height: 1.1;
+
+    }
+
+    .sub{
+
+      margin:0;
+
+      color: var(--muted);
+
+      line-height: 1.55;
+
+      font-size: 14px;
+
+    }
+
+    .heroBody{
+
+      padding: 18px 22px 22px;
+
+      display:grid;
+
+      gap: 14px;
+
+    }
+
+    .panel{
+
+      background: rgba(0,0,0,.18);
+
+      border: 1px solid rgba(255,255,255,.14);
+
+      border-radius: 14px;
+
+      padding: 14px;
+
+    }
+
+    .row{
+
+      display:flex;
+
+      gap: 12px;
+
+      flex-wrap: wrap;
+
+      align-items:center;
+
+      justify-content: space-between;
+
+    }
+
+    .kpi{
+
+      display:flex;
+
+      gap: 10px;
+
+      align-items:center;
+
+      color: var(--muted);
+
+      font-size: 13px;
+
+    }
+
+    .pill{
+
+      display:inline-flex;
+
+      align-items:center;
+
+      padding: 6px 10px;
+
+      border-radius: 999px;
+
+      border: 1px solid rgba(255,255,255,.14);
+
+      background: rgba(255,255,255,.06);
+
+      gap: 8px;
+
+    }
+
+    .signal{
+
+      width:10px;height:10px;border-radius:50%;
+
+      background: var(--danger);
+
+      box-shadow: 0 0 16px rgba(255,92,122,.45);
+
+    }
+
+    .signal.ok{
+
+      background: var(--ok);
+
+      box-shadow: 0 0 16px rgba(92,255,180,.35);
+
+    }
+
+    .actions{
+
+      display:grid;
+
+      grid-template-columns: 1fr 1fr;
+
+      gap: 12px;
+
+    }
+
+    @media (max-width: 520px){
+
+      .actions{ grid-template-columns: 1fr; }
+
+    }
+
+    a.btn, button.btn{
+
+      appearance:none;
+
+      border: 1px solid rgba(255,255,255,.18);
+
+      background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.07));
+
+      color: var(--txt);
+
+      border-radius: 14px;
+
+      padding: 14px 14px;
+
+      text-decoration:none;
+
+      cursor:pointer;
+
+      display:flex;
+
+      align-items:center;
+
+      justify-content: space-between;
+
+      gap: 12px;
+
+      font-weight: 700;
+
+      letter-spacing: .01em;
+
+      transition: transform .08s ease, border-color .2s ease, background .2s ease;
+
+      user-select:none;
+
+    }
+
+    a.btn:hover, button.btn:hover{
+
+      transform: translateY(-1px);
+
+      border-color: rgba(255,255,255,.28);
+
+      background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.09));
+
+    }
+
+    .btn.primary{
+
+      border-color: rgba(80,120,255,.55);
+
+      background: linear-gradient(180deg, rgba(80,120,255,.35), rgba(255,255,255,.07));
+
+    }
+
+    .btnIcon{
+
+      width: 36px;
+
+      height: 36px;
+
+      border-radius: 12px;
+
+      display:grid;
+
+      place-items:center;
+
+      background: rgba(0,0,0,.18);
+
+      border: 1px solid rgba(255,255,255,.14);
+
+      flex: 0 0 auto;
+
+    }
+
+    .btnText{
+
+      display:flex;
+
+      flex-direction:column;
+
+      gap: 2px;
+
+      min-width: 0;
+
+    }
+
+    .btnText small{
+
+      color: var(--muted);
+
+      font-weight: 600;
+
+    }
+
+    .arrow{
+
+      color: rgba(233,238,252,.75);
+
+      font-weight: 900;
+
+      flex: 0 0 auto;
+
+    }
+
+    .mono{
+
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Noto Sans Mono", monospace;
+
+      font-size: 12px;
+
+      word-break: break-all;
+
+      color: rgba(233,238,252,.78);
+
+      background: rgba(0,0,0,.22);
+
+      border: 1px solid rgba(255,255,255,.12);
+
+      border-radius: 12px;
+
+      padding: 10px;
+
+    }
+
+    .side{
+
+      padding: 18px;
+
+      display:grid;
+
+      gap: 14px;
+
+    }
+
+    .side h2{
+
+      margin: 0;
+
+      font-size: 16px;
+
+      letter-spacing: .02em;
+
+    }
+
+    .list{
+
+      display:grid;
+
+      gap: 10px;
+
+      margin:0;
+
+      padding:0;
+
+      list-style:none;
+
+    }
+
+    .list li{
+
+      border: 1px solid rgba(255,255,255,.12);
+
+      background: rgba(0,0,0,.14);
+
+      border-radius: 14px;
+
+      padding: 12px;
+
+      color: var(--muted);
+
+      font-size: 13px;
+
+      line-height: 1.5;
+
+    }
+
+    .footer{
+
+      color: rgba(233,238,252,.55);
+
+      font-size: 12px;
+
+      padding-top: 6px;
+
+      border-top: 1px solid rgba(255,255,255,.10);
+
+    }
+</style>
+</head>
+<body>
+<main class="wrap" aria-label="軽音部 機材管理ポータル">
+<section class="hero">
+<div class="heroHeader">
+<div class="badge"><span class="dot"></span> Light Music Club Portal</div>
+<h1>機材管理システム<br/>入口ページ</h1>
+<p class="sub">
+
+          QRから開いたら、まずここ。<br/>
+
+          「開く」ボタンで機材管理（GAS）へ移動します。開けない時は下のチェックを見てください。
+</p>
+</div>
+<div class="heroBody">
+<div class="panel">
+<div class="row">
+<div class="kpi">
+<span class="pill"><span id="netDot" class="signal"></span> 通信状態</span>
+<span class="pill">端末: <span id="ua">-</span></span>
+</div>
+<button class="btn" id="copyBtn" type="button" aria-label="リンクをコピー">
+<span class="btnIcon">⧉</span>
+<span class="btnText">
+
+                リンクをコピー
+<small>開けない時にLINE等で共有</small>
+</span>
+<span class="arrow">›</span>
+</button>
+</div>
+<div style="margin-top:12px" class="mono" id="gasUrlBox">（GAS URL 未設定）</div>
+</div>
+<div class="actions">
+<a class="btn primary" id="openBtn" href="#" rel="noopener">
+<span class="btnIcon">▶</span>
+<span class="btnText">
+
+              機材管理を開く
+<small>GAS Webアプリ（/exec）</small>
+</span>
+<span class="arrow">›</span>
+</a>
+<button class="btn" id="retryBtn" type="button">
+<span class="btnIcon">↻</span>
+<span class="btnText">
+
+              再読み込み
+<small>読み込み失敗時</small>
+</span>
+<span class="arrow">›</span>
+</button>
+</div>
+<div class="panel">
+<div class="row" style="align-items:flex-start">
+<div>
+<div style="font-weight:800; margin-bottom:6px;">開けない時のチェック</div>
+<div class="sub">
+
+                1) URLが <span class="mono" style="padding:2px 6px;">/exec</span> になっているか<br/>
+
+                2) 学校Wi-Fiでブロックされる場合、4G/5Gで試す<br/>
+
+                3) iPhoneは「Safariで開く」を試す
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<aside class="side">
+<h2>軽音モード</h2>
+<ul class="list">
+<li>🎸 <b>搬入・搬出</b>：この入口から「貸出/返却」を必ず記録</li>
+<li>🎤 <b>マイク/スタンド</b>：品番が近いので、QRで取り違い防止</li>
+<li>🔌 <b>ケーブル</b>：まとめQR運用の場合は「本数」だけ注意</li>
+<li>📶 <b>体育館</b>：回線が弱い時は 4G/5G が安定しやすい</li>
+</ul>
+<div class="footer">
+
+        © Light Music Club / Portal Page<br/>
+
+        ※ このページは入口。機材管理はリンク先（GAS）で動作します。
+</div>
+</aside>
+</main>
+<script>
+
+    // ★ここにあなたのGAS WebアプリURL（/exec）を入れてください
+
+    const GAS_EXEC_URL = "https://script.google.com/macros/s/AKfycbz0tbr84G4rvw_CQyw-bXIK-fOU-m6s2WUszaOwfUQZHrD5OG4B8RZByPs6n1z6Jqxh/exec";
+
+    // UI反映
+
+    const openBtn = document.getElementById("openBtn");
+
+    const gasUrlBox = document.getElementById("gasUrlBox");
+
+    const ua = document.getElementById("ua");
+
+    const netDot = document.getElementById("netDot");
+
+    gasUrlBox.textContent = GAS_EXEC_URL;
+
+    openBtn.href = GAS_EXEC_URL;
+
+    // 端末表示
+
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    const isAndroid = /Android/i.test(navigator.userAgent);
+
+    ua.textContent = isIOS ? "iOS" : isAndroid ? "Android" : "PC";
+
+    // 通信状態
+
+    function updateNet(){
+
+      const ok = navigator.onLine;
+
+      netDot.classList.toggle("ok", ok);
+
+      netDot.title = ok ? "オンライン" : "オフライン";
+
+    }
+
+    window.addEventListener("online", updateNet);
+
+    window.addEventListener("offline", updateNet);
+
+    updateNet();
+
+    // コピー
+
+    document.getElementById("copyBtn").addEventListener("click", async () => {
+
+      try{
+
+        await navigator.clipboard.writeText(GAS_EXEC_URL);
+
+        alert("リンクをコピーしました。");
+
+      }catch(e){
+
+        // iOSなどで失敗した時のフォールバック
+
+        const tmp = document.createElement("textarea");
+
+        tmp.value = GAS_EXEC_URL;
+
+        document.body.appendChild(tmp);
+
+        tmp.select();
+
+        document.execCommand("copy");
+
+        document.body.removeChild(tmp);
+
+        alert("リンクをコピーしました。");
+
+      }
+
+    });
+
+    // 再読み込み
+
+    document.getElementById("retryBtn").addEventListener("click", () => location.reload());
+
+    // /dev を入れてしまった事故防止（見た目で分かるようにする）
+
+    if (GAS_EXEC_URL.includes("/dev")) {
+
+      gasUrlBox.textContent = "⚠ /dev になっています。/exec のURLに差し替えてください。\n" + GAS_EXEC_URL;
+
+    }
+</script>
+</body>
+</html>
+ 
