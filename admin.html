@@ -1,0 +1,76 @@
+const API_URL = "GAS_WEBAPP_URL";
+async function login(){
+  const id = document.getElementById('adminId').value.trim();
+  const pass = document.getElementById('adminPass').value;
+  const msg = document.getElementById('loginMsg');
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true;
+  msg.textContent = '認証中...';
+  try{
+    const response = await fetch(API_URL, {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({
+        mode:'loginAdmin',
+        id:id,
+        pass:pass
+      })
+    });
+
+    const result = await response.json();
+
+    btn.disabled = false;
+
+    if(!result.ok){
+
+      msg.innerHTML =
+        '<span class="ng">' +
+        escapeHtml(result.msg || '認証失敗') +
+        '</span>';
+
+      return;
+    }
+
+    document
+      .getElementById('loginCard')
+      .classList.add('hidden');
+
+    document
+      .getElementById('appCard')
+      .classList.remove('hidden');
+
+    refreshInventory();
+
+    fetchHistory();
+
+  }catch(e){
+
+    btn.disabled = false;
+
+    msg.innerHTML =
+      '<span class="ng">通信エラー</span>';
+  }
+}
+
+async function refreshInventory(){
+
+  const body = document.getElementById('invBody');
+
+  body.innerHTML =
+    "<tr><td colspan='3'>取得中...</td></tr>";
+
+  try{
+
+    const response = await fetch(API_URL, {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({
+        mode:'getInventory'
+      })
+    });
+
+    const result = a
