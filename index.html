@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>機材管理ポータル - BUILD 2026</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .hidden-section { display: none; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen pb-12">
+
+  <div id="login-section" class="max-w-md mx-auto mt-20 p-6 bg-white rounded-xl shadow-md border border-slate-200">
+    <h2 class="text-xl font-bold mb-4 text-center text-slate-700">🔒 認証が必要です</h2>
+    <p class="text-sm text-slate-500 mb-4 text-center">部室共通のシステムパスワードを入力してください。</p>
+    <div class="space-y-4">
+      <input type="password" id="input-pass" placeholder="パスワードを入力" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <button onclick="attemptLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition">ログイン</button>
+    </div>
+  </div>
+
+  <div id="main-section" class="hidden-section max-w-4xl mx-auto px-4 mt-8">
+    <header class="flex justify-between items-center mb-6 pb-4 border-b border-slate-200">
+      <div>
+        <h1 class="text-2xl font-bold text-slate-900">機材管理ポータル</h1>
+        <p class="text-xs text-slate-500">BUILD_2026_MODERN_PORTAL</p>
+      </div>
+      <button onclick="logout()" class="text-sm bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded-lg transition">ログアウト</button>
+    </header>
+
+    <div class="grid grid-cols-3 gap-4 mb-8">
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+        <div class="text-xs text-slate-500 font-medium">総機材数</div>
+        <div id="stat-total" class="text-2xl font-bold text-slate-800">-</div>
+      </div>
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+        <div class="text-xs text-slate-500 font-medium">貸出中</div>
+        <div id="stat-out" class="text-2xl font-bold text-amber-600">-</div>
+      </div>
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+        <div class="text-xs text-slate-500 font-medium">持ち帰り</div>
+        <div id="stat-carry" class="text-2xl font-bold text-blue-600">-</div>
+      </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm mb-8">
+      <h3 class="text-lg font-bold mb-4 text-slate-700">📝 利用登録</h3>
+      <form id="log-form" onsubmit="submitLog(event)" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-600 mb-1">氏名</label>
+            <input type="text" id="form-name" required class="w-full px-4 py-2 border border-slate-300 rounded-lg">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-600 mb-1">手続きタイプ</label>
+            <select id="form-type" class="w-full px-4 py-2 border border-slate-300 rounded-lg">
+              <option value="貸出">貸出 (部外への持ち出し)</option>
+              <option value="返却">返却 (部室へ戻す)</option>
+              <option value="持ち帰り">持ち帰り (個人利用)</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-600 mb-1">管理番号 (カンマ・改行区切りで複数可)</label>
+          <input type="text" id="form-ids" required placeholder="例: CAM-01, LEN-02" class="w-full px-4 py-2 border border-slate-300 rounded-lg">
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-600 mb-1">用途</label>
+            <input type="text" id="form-use" required class="w-full px-4 py-2 border border-slate-300 rounded-lg">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-600 mb-1">確認者ID</label>
+            <input type="text" id="form-checker" required class="w-full px-4 py-2 border border-slate-300 rounded-lg">
+          </div>
+        </div>
+        <button type="submit" id="submit-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition">登録する</button>
+      </form>
+    </div>
+
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="p-4 bg-slate-100 border-b border-slate-200 font-bold text-slate-700 flex justify-between items-center">
+        <span>📦 現在の機材在庫一覧</span>
+        <button onclick="loadInventory()" class="text-xs bg-white border border-slate-300 hover:bg-slate-50 px-2 py-1 rounded transition">🔄 更新</button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase tracking-wider">
+              <th class="px-6 py-3">管理ID</th>
+              <th class="px-6 py-3">機材名</th>
+              <th class="px-6 py-3">ステータス</th>
+            </tr>
+          </thead>
+          <tbody id="inventory-tbody" class="divide-y divide-slate-100 text-sm text-slate-700">
+            <tr><td colspan="3" class="px-6 py-4 text-center text-slate-400">データ読み込み中...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ★重要: あなたのGASのWebアプリURL（デプロイ後に取得するもの）に差し替えてください
+    const GAS_API_URL = "https://script.google.com/macros/s/XXXXXX_YOUR_GAS_ID_XXXXXX/exec";
+
+    let savedPassword = localStorage.getItem("gate_pass") || "";
+
+    // 画面ロード時の処理
+    window.addEventListener('DOMContentLoaded', () => {
+      if (savedPassword) {
+        showMainSection();
+      }
+    });
+
+    function showMainSection() {
+      document.getElementById("login-section").classList.add("hidden-section");
+      document.getElementById("main-section").classList.remove("hidden-section");
+      loadInventory();
+    }
+
+    async function attemptLogin() {
+      const pass = document.getElementById("input-pass").value.trim();
+      if(!pass) return alert("パスワードを入力してください");
+      
+      // パスワードが正しいか、在庫取得APIを叩いてテストしてみる
+      document.body.style.cursor = "wait";
+      try {
+        const res = await fetch(`${GAS_API_URL}?action=stock&pass=${encodeURIComponent(pass)}`);
+        const data = await res.json();
+        if (data.ok) {
+          localStorage.setItem("gate_pass", pass);
+          savedPassword = pass;
+          showMainSection();
+        } else {
+          alert("認証に失敗しました: " + data.msg);
+        }
+      } catch (e) {
+        alert("通信エラーが発生しました");
+      } finally {
+        document.body.style.cursor = "default";
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("gate_pass");
+      location.reload();
+    }
+
+    // 在庫データの非同期取得（画面をカチカチさせずに裏で取得する）
+    async function loadInventory() {
+      try {
+        const res = await fetch(`${GAS_API_URL}?action=stock&pass=${encodeURIComponent(savedPassword)}`);
+        const data = await res.json();
+        if (!data.ok) {
+          alert("データ取得エラー: " + data.msg);
+          if(data.msg.includes("パスワード")) logout();
+          return;
+        }
+
+        // スタッツ反映
+        document.getElementById("stat-total").innerText = data.total;
+        document.getElementById("stat-out").innerText = data.outCount;
+        document.getElementById("stat-carry").innerText = data.carryCount;
+
+        // テーブル反映
+        const tbody = document.getElementById("inventory-tbody");
+        tbody.innerHTML = "";
+        if(data.rows.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="3" class="px-6 py-4 text-center text-slate-400">登録されている機材はありません</td></tr>`;
+          return;
+        }
+
+        data.rows.forEach(row => {
+          let badgeColor = "bg-green-100 text-green-800";
+          if (row.status.includes("貸出中")) badgeColor = "bg-amber-100 text-amber-800";
+          if (row.status.includes("持ち帰り")) badgeColor = "bg-blue-100 text-blue-800";
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td class="px-6 py-3 font-mono font-medium">${row.id}</td>
+            <td class="px-6 py-3">${row.name}</td>
+            <td class="px-6 py-3"><span class="px-2 py-1 rounded-full text-xs font-semibold ${badgeColor}">${row.status}</span></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // 利用ログの送信（doPostへの送信）
+    async function submitLog(e) {
+      e.preventDefault();
+      const btn = document.getElementById("submit-btn");
+      btn.disabled = true;
+      btn.innerText = "送信中...";
+
+      const payload = {
+        name: document.getElementById("form-name").value,
+        type: document.getElementById("form-type").value,
+        idsRaw: document.getElementById("form-ids").value,
+        use: document.getElementById("form-use").value,
+        checker: document.getElementById("form-checker").value
+      };
+
+      try {
+        const response = await fetch(GAS_API_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            pass: savedPassword,
+            action: "log_submit",
+            payload: payload
+          })
+        });
+        const result = await response.json();
+        if(result.ok) {
+          alert(`登録に成功しました！(処理対象: ${result.count}件)`);
+          document.getElementById("form-ids").value = "";
+          document.getElementById("form-use").value = "";
+          loadInventory(); // 在庫を再読み込みして最新にする
+        } else {
+          alert("登録失敗: " + result.msg);
+        }
+      } catch(err) {
+        alert("送信中にエラーが発生しました。");
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "登録する";
+      }
+    }
+  </script>
+</body>
+</html>
