@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>ADMIN - 名護商工軽音部</title>
+
+<style>
+:root {
+  /* アイコンに合わせた爽やかなカラーパレット */
+  --bg-color: #f0f9ff;
+  --card-bg: #ffffff;
+  --main-blue: #00a0e9;      /* メインのブルー */
+  --hibiscus-pink: #ff4081;  /* アクセントのピンク */
+  --text-color: #333333;
+  --sub-text: #666666;
+  --danger: #ff4081;
+  --success: #2ecc71;
+  --info: #00a0e9;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  margin: 0; padding: 15px; line-height: 1.6;
+}
+
+/* 管理者用ヘッダーデザイン */
+.admin-header {
+  background: linear-gradient(135deg, var(--main-blue), #00d2ff);
+  border-radius: 15px;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0,160,233,0.2);
+  color: white;
+}
+.admin-header h1 { font-size: 1.2rem; margin: 0; letter-spacing: 2px; }
+.admin-header p { font-size: 0.7rem; opacity: 0.9; margin: 5px 0 0 0; }
+
+.card {
+  background-color: var(--card-bg);
+  border: 1px solid rgba(0,160,233,0.1);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 15px;
+  box-sizing: border-box;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+#loginCard { max-width: 400px; margin: 50px auto; border-top: 5px solid var(--hibiscus-pink); }
+
+h2, h3 { text-align: center; color: var(--main-blue); letter-spacing: 2px; }
+h3 { text-align: left; font-size: 1rem; margin-top: 0; border-left: 4px solid var(--hibiscus-pink); padding-left: 10px; }
+
+label { display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 8px; color: var(--main-blue); }
+
+input[type="text"], input[type="password"] {
+  width: 100%; padding: 14px; margin-bottom: 20px; border: 2px solid #e1f5fe;
+  border-radius: 8px; background-color: #fcfcfc; color: #333;
+  font-size: 16px; box-sizing: border-box; outline: none; transition: border-color 0.3s;
+}
+input:focus { border-color: var(--main-blue); }
+
+button {
+  width: 100%; padding: 15px; font-size: 1rem; font-weight: bold;
+  border: none; border-radius: 8px; background-color: var(--main-blue);
+  color: #fff; cursor: pointer; transition: 0.2s; margin-bottom: 10px;
+  box-shadow: 0 3px 0 #0081bb;
+}
+
+button:active { transform: scale(0.98); box-shadow: none; }
+button.gray { background: #90a4ae; box-shadow: 0 3px 0 #546e7a; }
+button.green { background: var(--success); box-shadow: 0 3px 0 #27ae60; }
+button.blue { background: var(--hibiscus-pink); box-shadow: 0 3px 0 #d81b60; } /* テストボタンはピンクに */
+
+.hidden { display: none; }
+.ok { color: var(--success); font-weight: bold; }
+.ng { color: var(--danger); font-weight: bold; }
+
+.table-container { overflow-x: auto; margin-top: 10px; background: #fff; border-radius: 8px; border: 1px solid #e1f5fe; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; color: #333; }
+th, td { padding: 12px 8px; border-bottom: 1px solid #e1f5fe; text-align: left; }
+th { background: #f0f9ff; color: var(--main-blue); }
+
+.hist-card { border-left: 4px solid var(--main-blue); padding: 12px; margin-bottom: 10px; background: #fafafa; border-radius: 4px; }
+.badge { padding: 2px 8px; border-radius: 4px; font-size: 10px; margin-left: 5px; color: white; font-weight: bold; }
+.badge-out { background: var(--danger); }
+.badge-in { background: var(--success); }
+.badge-carry { background: #ffa000; }
+
+.topbar { font-size: 10px; color: var(--sub-text); display: flex; justify-content: space-between; margin-bottom: 10px; }
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+  <span>NAGO SHOKO GEAR SYSTEM (ADMIN)</span>
+  <span id="buildId">BUILD: 2026_STATIC_PORTAL</span>
+</div>
+
+<div id="loginCard" class="card">
+  <h2 style="color: var(--hibiscus-pink);">ADMIN LOGIN</h2>
+  <p style="text-align:center; font-size: 0.7rem; color: var(--sub-text); margin-bottom: 20px;">名護商工高等学校 軽音楽部</p>
+  <label>USER ID</label>
+  <input id="adminId" type="text" placeholder="IDを入力">
+  <label>PASSWORD</label>
+  <input id="adminPass" type="password" placeholder="PASSを入力">
+  <button id="loginBtn" onclick="login()">LOGIN</button>
+  <p id="loginMsg" style="text-align:center; font-size:12px; margin-top:15px;"></p>
+</div>
+
+<div id="appCard" class="hidden">
+  <div class="admin-header">
+    <p>NAGO SHOKO ROCK SYSTEM</p>
+    <h1>ADMIN PORTAL</h1>
+  </div>
+
+  <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:15px 20px;">
+    <span class="ok">● 認証済み</span>
+    <button class="gray" onclick="logout()" style="width:auto; padding: 8px 15px; font-size:12px; margin:0;">ログアウト</button>
+  </div>
+
+  <div class="card">
+    <h3>システム点検・テスト</h3>
+    <button onclick="runHealthCheckUI()">総合点検実行</button>
+    <button class="blue" id="lineTestBtn" onclick="testLinePushUI()">LINE通知テスト送信</button>
+    <div id="healthResult" style="margin-top:15px; font-size:13px; line-height:1.8;"></div>
+  </div>
+
+  <div class="card">
+    <h3>現在の在庫</h3>
+    <button class="gray" onclick="refreshInventory()">最新の状態を取得</button>
+    <div id="invSummary" style="font-size:12px; margin: 10px 0; color:var(--main-blue); font-weight:bold;"></div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr><th>ID</th><th>機材名</th><th>状態</th></tr>
+        </thead>
+        <tbody id="invBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>送信履歴 (最新100件)</h3>
+    <button class="gray" onclick="fetchHistory()">履歴を更新</button>
+    <div id="historyList" style="margin-top:15px;"></div>
+  </div>
+</div>
+
+<script>
+/* ★最重要：デプロイしたGASのWebアプリURLに書き換えてください */
+const GAS_API_URL = "https://script.google.com/macros/s/XXXXXX_YOUR_GAS_ID_XXXXXX/exec";
+
+// メンバー共通パスワード。管理者としてGASからデータを引っ張るための一時認証用として利用
+// セッションストレージ等で保持しておくと便利です
+let memberPass = localStorage.getItem("gate_pass") || "";
+
+function escapeHtml(str){
+  return String(str || '').replace(/[&<>"']/g, function(m){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
+  });
+}
+
+// 共通パスワードが手元にない場合は、ログイン前に一度入力してもらう仕組み
+if (!memberPass) {
+  memberPass = prompt("システム利用パスワード（一般共通）をまず入力してください：");
+  if(memberPass) localStorage.setItem("gate_pass", memberPass);
+}
+
+async function login(){
+  const id = document.getElementById('adminId').value.trim();
+  const pass = document.getElementById('adminPass').value;
+  const msg = document.getElementById('loginMsg');
+  const btn = document.getElementById('loginBtn');
+
+  if(!id || !pass) {
+    alert("IDとパスワードを入力してください");
+    return;
+  }
+
+  btn.disabled = true;
+  msg.textContent = "認証中...";
+
+  try {
+    // 外部からGASへ管理者ログインのリクエスト（POST）を送信
+    const response = await fetch(GAS_API_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        pass: memberPass,
+        action: "admin_login",
+        adminId: id,
+        adminPass: pass
+      })
+    });
+    
+    const r = await response.json();
+    btn.disabled = false;
+    
+    if(!r || !r.ok){
+      msg.innerHTML = '<span class="ng">' + escapeHtml(r && r.msg ? r.msg : "認証失敗") + '</span>';
+      return;
+    }
+    
+    document.getElementById('loginCard').classList.add('hidden');
+    document.getElementById('appCard').classList.remove('hidden');
+    refreshInventory();
+    fetchHistory();
+  } catch(err) {
+    btn.disabled = false;
+    msg.innerHTML = '<span class="ng">通信エラー</span>';
+  }
+}
+
+function logout(){ 
+  location.reload(); 
+}
+
+async function refreshInventory(){
+  const body = document.getElementById('invBody');
+  body.innerHTML = "<tr><td colspan='3'>取得中...</td></tr>";
+  
+  try {
+    const res = await fetch(`${GAS_API_URL}?action=stock&pass=${encodeURIComponent(memberPass)}`);
+    const r = await res.json();
+    if(!r || !r.ok) {
+      body.innerHTML = "<tr><td colspan='3' class='ng'>データ取得失敗</td></tr>";
+      return;
+    }
+    
+    document.getElementById('invSummary').textContent = `総数:${r.total} / 貸出:${r.outCount} / 持帰:${r.carryCount}`;
+    body.innerHTML = r.rows.map(x => `
+      <tr>
+        <td>${escapeHtml(x.id)}</td>
+        <td>${escapeHtml(x.name)}</td>
+        <td class="${x.status.includes('部室') ? 'ok' : 'ng'}">${escapeHtml(x.status)}</td>
+      </tr>`).join("");
+  } catch(e) {
+    body.innerHTML = "<tr><td colspan='3' class='ng'>通信エラー</td></tr>";
+  }
+}
+
+async function fetchHistory(){
+  const box = document.getElementById('historyList');
+  box.innerHTML = "読込中...";
+  
+  try {
+    const res = await fetch(`${GAS_API_URL}?action=history&pass=${encodeURIComponent(memberPass)}`);
+    const r = await res.json();
+    if(!r || !r.ok) {
+      box.textContent = "履歴の取得に失敗しました。";
+      return;
+    }
+    
+    box.innerHTML = r.data.map(x => {
+      const bCls = x.type==='返却'?'badge-in':(x.type==='貸出'?'badge-out':'badge-carry');
+      return `
+      <div class="hist-card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <strong>${escapeHtml(x.name)}</strong>
+          <span class="badge ${bCls}">${escapeHtml(x.type)}</span>
+        </div>
+        <div style="font-size:10px; color:#aaa; margin-top:4px;">${escapeHtml(x.date)}</div>
+        <div style="color:var(--main-blue); font-family:monospace; font-size:13px; margin:5px 0;">${escapeHtml(x.ids)}</div>
+        <div style="font-size:11px; color:#ccc;">用途: ${escapeHtml(x.use)}</div>
+      </div>`;
+    }).join("");
+  } catch(e) {
+    box.textContent = "通信エラー";
+  }
+}
+
+async function runHealthCheckUI(){
+  const box = document.getElementById("healthResult");
+  box.textContent = "点検中...";
+  
+  try {
+    const res = await fetch(`${GAS_API_URL}?action=health&pass=${encodeURIComponent(memberPass)}`);
+    const r = await res.json();
+    if(!r || !r.ok) {
+      box.textContent = "点検処理に失敗しました。";
+      return;
+    }
+    
+    box.innerHTML = `
+      <div>履歴ログシート: ${r.logSheet?'✅':'❌'}</div>
+      <div>在庫状況シート: ${r.stockSheet?'✅':'❌'}</div>
+      <div>エラーログシート: ${r.errorSheet?'✅':'❌'}</div>
+      <div>バックアップシート: ${r.backupSheet?'✅':'❌'}</div>
+      <div>LINEトークン設定: ${r.lineToken?'✅':'❌'}</div>
+    `;
+  } catch(e) {
+    box.textContent = "通信エラー";
+  }
+}
+
+async function testLinePushUI(){
+  const btn = document.getElementById('lineTestBtn');
+  if(!confirm("公式LINEへテストメッセージを飛ばしますか？")) return;
+  btn.disabled = true;
+  btn.textContent = "送信中...";
+  
+  try {
+    const response = await fetch(GAS_API_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        pass: memberPass,
+        action: "line_test"
+      })
+    });
+    const r = await response.json();
+    btn.disabled = false;
+    btn.textContent = "LINE通知テスト送信";
+    alert(r && r.msg ? r.msg : "完了");
+  } catch(err) {
+    btn.disabled = false;
+    btn.textContent = "LINE通知テスト送信";
+    alert("エラーが発生しました。");
+  }
+}
+</script>
+</body>
+</html>
